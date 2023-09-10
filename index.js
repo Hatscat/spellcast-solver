@@ -128,6 +128,11 @@ function solution({ value, cellIndexes, points }) {
         elements.cells[index].classList.remove(highlightClass);
       });
     },
+    ondblclick: () => {
+      cellIndexes.forEach((index) => {
+        elements.cells[index].value = "";
+      });
+    },
   })([
     lm("span", { className: "font-bold" })(value),
     lm("span", { className: "ml-2" })(`(${points})`),
