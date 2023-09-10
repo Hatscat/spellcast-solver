@@ -1,0 +1,11 @@
+{
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "javascript.validate.enable": true,
+  "javascript.suggest.enabled": true,
+  "javascript.suggest.completeJSDocs": true,
+  "javascript.suggest.jsdoc.generateReturns": true,
+  "typescript.validate.enable": true,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}
