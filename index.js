@@ -83,7 +83,10 @@ function pageLayout() {
   ]);
 }
 
-function cell() {
+/**
+ * @param {number} index
+ */
+function cell(index) {
   return lm("input", {
     className:
       " border-2 border-black w-16 h-16 text-center uppercase font-bold",
@@ -100,6 +103,8 @@ function cell() {
         return;
       }
       input.value = ev.data.toUpperCase();
+
+      elements.cells[(index + 1) % elements.cells.length].focus();
     },
     // })("");
   })("ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random() * 26)]);
