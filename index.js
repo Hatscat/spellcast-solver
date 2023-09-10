@@ -3,9 +3,37 @@ const config = {
   cols: 5,
   solutionMinLength: 3,
   solutionMaxLength: 7,
+  letterPoints: {
+    a: 1,
+    b: 4,
+    c: 5,
+    d: 3,
+    e: 1,
+    f: 5,
+    g: 3,
+    h: 4,
+    i: 1,
+    j: 7,
+    k: 6,
+    l: 3,
+    m: 4,
+    n: 2,
+    o: 1,
+    p: 4,
+    q: 8,
+    r: 2,
+    s: 2,
+    t: 2,
+    u: 4,
+    v: 5,
+    w: 5,
+    x: 7,
+    y: 4,
+    z: 8,
+  },
 };
 
-/** @typedef {{value: string, cellIndexes: number[]}} Word */
+/** @typedef {{value: string, cellIndexes: number[], points: number}} Word */
 
 const state = {
   /** @type {Word[]} */
@@ -81,10 +109,10 @@ function cell() {
  * @param {Word} word
  * @returns {LM} solution element
  */
-function solution({ value, cellIndexes }) {
+function solution({ value, cellIndexes, points }) {
   const highlightClass = "bg-green-300";
   return lm("div", {
-    className: "flex font-bold bg-gray-200 p-2 rounded-md hover:bg-green-300",
+    className: "flex bg-gray-200 p-2 rounded-md hover:bg-green-300",
     onmouseover: () => {
       cellIndexes.forEach((index) => {
         elements.cells[index].classList.add(highlightClass);
@@ -95,7 +123,10 @@ function solution({ value, cellIndexes }) {
         elements.cells[index].classList.remove(highlightClass);
       });
     },
-  })(value);
+  })([
+    lm("span", { className: "font-bold" })(value),
+    lm("span", { className: "ml-2" })(`(${points})`),
+  ]);
 }
 
 function solveGrid() {
@@ -106,7 +137,7 @@ function solveGrid() {
   state.words = state.words.filter(({ value }) =>
     window.DICTIONARY?.has(value)
   );
-  state.words.sort((a, b) => b.value.length - a.value.length);
+  state.words.sort((a, b) => b.points - a.points);
 
   elements.solutionsContainer?.replaceContent(
     state.words.length > 0
@@ -115,6 +146,22 @@ function solveGrid() {
           "No solution found"
         )
   );
+}
+
+/**
+ * @param {string} word
+ * @returns {number}
+ */
+function getWordPoints(word) {
+  return word
+    .split("")
+    .map(
+      (letter) =>
+        config.letterPoints[
+          /** @type {keyof typeof config.letterPoints} */ (letter)
+        ]
+    )
+    .reduce((a, b) => a + b, 0);
 }
 
 /**
@@ -137,9 +184,11 @@ function browseAvailableWords(currentWord, cellIndex, indexesPath = []) {
   const wordPath = [...indexesPath, cellIndex];
   const wordValue = currentWord + elements.cells[cellIndex].value;
   if (wordValue.length >= config.solutionMinLength) {
+    const value = wordValue.toLowerCase();
     state.words.push({
-      value: wordValue.toLocaleLowerCase(),
+      value,
       cellIndexes: wordPath,
+      points: getWordPoints(value),
     });
   }
   linkedIndexes.forEach((index) => {
