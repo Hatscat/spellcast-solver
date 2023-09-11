@@ -52,7 +52,7 @@ onload = () => {
     range(config.rows * config.cols).map(cell)
   );
   elements.solutionsContainer = lm("div", {
-    className: "flex flex-wrap gap-2",
+    className: "m-4 flex flex-wrap gap-2",
   })();
   document.body.appendChild(pageLayout());
 };
@@ -63,7 +63,7 @@ function pageLayout() {
     {}
   )([
     lm("div", {
-      className: "flex mt-4 mb-4 w-screen justify-center items-center gap-16",
+      className: "flex mt-4 w-screen justify-center items-center gap-16",
     })([
       lm("div", {
         className: "inline-grid grid-cols-5 gap-4",
