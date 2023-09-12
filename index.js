@@ -1,7 +1,7 @@
 const config = {
   rows: 5,
   cols: 5,
-  solutionMinLength: 3,
+  solutionMinLength: 4,
   solutionMaxLength: 7,
   letterPoints: {
     a: 1,
@@ -55,6 +55,10 @@ onload = () => {
     className: "m-4 flex flex-wrap gap-2",
   })();
   document.body.appendChild(pageLayout());
+};
+
+onkeyup = (e) => {
+  if (e.key === "Enter") solveGrid();
 };
 
 function pageLayout() {
@@ -116,6 +120,7 @@ function cell(index) {
  */
 function solution({ value, cellIndexes, points }) {
   const highlightClass = "bg-green-300";
+  const selectClass = "invert";
   return lm("div", {
     className: "flex bg-gray-200 p-2 rounded-md hover:bg-green-300",
     onmouseover: () => {
@@ -128,9 +133,18 @@ function solution({ value, cellIndexes, points }) {
         elements.cells[index].classList.remove(highlightClass);
       });
     },
+    onclick: () => {
+      elements.cells.forEach((cell) => {
+        cell.classList.remove(selectClass);
+      });
+      cellIndexes.forEach((index) => {
+        elements.cells[index].classList.add(selectClass);
+      });
+    },
     ondblclick: () => {
       cellIndexes.forEach((index) => {
         elements.cells[index].value = "";
+        elements.cells[index].classList.remove(selectClass);
       });
     },
   })([
@@ -144,9 +158,7 @@ function solveGrid() {
   elements.cells.forEach((_, index) => {
     browseAvailableWords("", index);
   });
-  state.words = state.words.filter(({ value }) =>
-    window.DICTIONARY?.has(value)
-  );
+
   state.words.sort((a, b) => b.points - a.points);
 
   elements.solutionsContainer?.replaceContent(
@@ -184,6 +196,7 @@ function browseAvailableWords(currentWord, cellIndex, indexesPath = []) {
   const linkedIndexes = getLinkedIndexes(cellIndex).filter(
     (index) => !indexesPath.includes(index)
   );
+
   if (
     currentWord.length >= config.solutionMaxLength ||
     linkedIndexes.length === 0 ||
@@ -191,15 +204,20 @@ function browseAvailableWords(currentWord, cellIndex, indexesPath = []) {
   ) {
     return;
   }
+
   const wordPath = [...indexesPath, cellIndex];
+
   const wordValue = currentWord + elements.cells[cellIndex].value;
+
   if (wordValue.length >= config.solutionMinLength) {
     const value = wordValue.toLowerCase();
-    state.words.push({
-      value,
-      cellIndexes: wordPath,
-      points: getWordPoints(value),
-    });
+    if (window.DICTIONARY?.has(value)) {
+      state.words.push({
+        value,
+        cellIndexes: wordPath,
+        points: getWordPoints(value),
+      });
+    }
   }
   linkedIndexes.forEach((index) => {
     browseAvailableWords(wordValue, index, wordPath);
